@@ -1,0 +1,18 @@
+{
+  "name": "goha",
+  "version": "0.1.0",
+  "description": "Go High Availability with the fastest easy-to-use reverse proxy",
+  "bin": "bin/goha",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Grelaud",
+  "pkg": {
+    "assets": [
+      "bin/cli.sh",
+      "bin/install.sh",
+      "bin/systemd"
+    ]
+  },
+  "license": "Apache-2.0"
+}

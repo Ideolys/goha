@@ -1,0 +1,9 @@
+node_modules
+run
+public
+privkey.pem
+cert.pem
+logs/*
+0perso/*
+config.js
+sftp-config.json

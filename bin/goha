@@ -1,0 +1,94 @@
+#!/usr/bin/env node
+
+// Force production mode with pkg
+// To avoid having stack trace in errors
+process.env.NODE_ENV = process.pkg ? 'production' : process.env.NODE_ENV;
+
+const action    = process.argv[2];
+const spawnSync = require('child_process').spawnSync;
+const path      = require('path');
+const fs        = require('fs');
+
+switch (action) {
+  case 'install':
+    installService(process.argv);
+    break;
+  case 'go':
+    require('../lib/index');
+    break;
+  case '-v':
+  case '--version':
+    console.log(helper.printVersion());
+    process.exit();
+    break;
+  case 'start':
+  case 'stop':
+  case 'log':
+  case 'reload':
+  case 'restart':
+    // use bash directly for all other low level system commands
+    spawnSync('bash', ['-c', fs.readFileSync(path.join(__dirname, 'cli.sh'), 'utf8'), action], { stdio : 'inherit' });
+    break;
+  default:
+    usage();
+}
+
+function usage () {
+  console.log([
+    , ' Usage : goha [commands]'
+    , ''
+    , ' Production [commands]. For Linux only, the proxy must be installed before:'
+    , ''
+    , '    start          : Start your proxy'
+    , '    stop           : Stops your proxy'
+    , '    reload         : Reload the configuration or upgrade seamlessly (no socket lost, no packet lost)'
+    , '    log            : Shows logs in realtime'
+    , '    restart        : Restarts completely your proxy with service interruption'
+    , '    --version [-v] : Get current version'
+    , '    --help [-h]    : Show this help'
+    , ''
+    , ' Installation and tests [commands]:'
+    , ''
+    , '    install  : Install the proxy as a systemd service (Linux only)'
+    , '               Options:'
+    , '                 --non-interactive : install without user interaction'
+    , '                 --no-start        : do not start or restart service'
+    , '    go       : Start the proxy without systemd, only for test purpose'
+    , ''
+  ].join('\n'));
+  process.exit();
+}
+
+
+/**
+ * Install systemd service
+ */
+function installService (argv) {
+  if (process.platform !== 'linux') {
+    console.log('Automatic installation as a service not available for your OS yet');
+    process.exit();
+  }
+  if (process.pkg === undefined) {
+    console.log('Automatic installation as a service available only for On-Premise Edition');
+    process.exit();
+  }
+  console.log('Generate install script ', argv[0]);
+  try {
+    // copy template systemd script outside of PKG binary file
+    fs.writeFileSync(path.join(process.cwd(), 'goha-systemd-template')   , fs.readFileSync(path.join(__dirname, 'systemd')));
+  }
+  catch (e) {
+    console.log('Cannot write goha-systemd-template files in ' + process.cwd() + '\n' +  e);
+    process.exit();
+  }
+  // execute install.sh
+  spawnSync('bash', [
+    '-c',
+    fs.readFileSync(path.join(__dirname, 'install.sh'), 'utf8').replace(/__SOURCE_BINARY_FILE__/g, argv[0]),
+    '' /* to avoid a bug with the "while (( $# ))"" in install.sh script, which cannot shift $0 parameter */
+  ].concat(argv.slice(3)),
+  { stdio : 'inherit' }
+  );
+}
+
+

@@ -1,0 +1,52 @@
+a####### OS X
+.DS_Store*
+Icon?
+._*
+
+
+####### Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+####### Linux
+.directory
+*~
+
+
+####### npm
+node_modules
+npm-debug.log
+
+
+####### IDE
+.emacs*
+*.flymake
+.#*
+.idea
+*.sublime-*
+
+
+####### LibreOffice & MS Office
+.~*
+~$*
+
+
+####### VCS
+*.orig
+*.rej
+.hgignore
+.hg
+
+
+######## project-specific
+node_modules
+0perso
+logs
+public
+run
+test
+privkey.pem
+cert.pem
+config.js
