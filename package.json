@@ -4,7 +4,7 @@
   "description": "Go High Availability with the fastest easy-to-use reverse proxy",
   "bin": "bin/goha",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha -w --growl -u bdd -t 20000 -R list -b test/*.js"
   },
   "author": "David Grelaud",
   "pkg": {
@@ -14,5 +14,19 @@
       "bin/systemd"
     ]
   },
-  "license": "Apache-2.0"
+  "devDependencies": {
+    "evil-dns": "= 0.2.0",
+    "mocha": "= 8.4.0",
+    "nock": "= 10.0.6",
+    "request": "= 2.88.0",
+    "should": "= 13.2.3",
+    "ws": "3.0.0",
+    "socket.io": "4.1.0",
+    "socket.io-client": "4.1.2"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "kitten-jwt": "1.1.1",
+    "request-ip": "2.1.3"
+  }
 }

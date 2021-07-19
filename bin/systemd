@@ -9,7 +9,7 @@ User=GOHA_USER
 ExecStart=GOHA_BIN_PATH go
 Restart=always
 # Configure watchdog
-WatchdogSec=60
+# WatchdogSec=60
 # Allow watchdog notification coming from a subprocess 
 NotifyAccess=all
 RestartSec=1

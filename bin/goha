@@ -7,6 +7,7 @@ process.env.NODE_ENV = process.pkg ? 'production' : process.env.NODE_ENV;
 const action    = process.argv[2];
 const spawnSync = require('child_process').spawnSync;
 const path      = require('path');
+const helper    = require('../lib/helper.js');
 const fs        = require('fs');
 
 switch (action) {
@@ -35,7 +36,7 @@ switch (action) {
 
 function usage () {
   console.log([
-    , ' Usage : goha [commands]'
+    ' Usage : goha [commands]'
     , ''
     , ' Production [commands]. For Linux only, the proxy must be installed before:'
     , ''

@@ -49,4 +49,6 @@ run
 test
 privkey.pem
 cert.pem
-config.js
+/config.js
+/config.json
+/config-runtime.json

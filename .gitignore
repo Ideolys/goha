@@ -1,9 +1,12 @@
 node_modules
 run
 public
+middlewares
+backup
 privkey.pem
 cert.pem
 logs/*
 0perso/*
-config.js
-sftp-config.json
+/config.js
+/config.json
+/config-runtime.json
