@@ -3,10 +3,10 @@
   "version": "1.0.0-beta.0",
   "description": "Go High Availability with the fastest easy-to-use reverse proxy",
   "bin": "bin/goha",
+  "private" : true,
   "scripts": {
     "test": "./node_modules/.bin/mocha -w --growl -u bdd -t 20000 -R list -b test/*.js",
-    "dry-build": "pkg -o ./build/goha .",
-    "build": "bin/build.sh"
+    "build": "pkg -t node14-linux-x64 --out-path ./build ."
   },
   "author": "Ideolys SAS",
   "license": "Apache-2.0",
