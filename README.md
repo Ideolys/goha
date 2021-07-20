@@ -1,7 +1,7 @@
 GoHA
-===
+====
 
-Extremely light and powerful Node JS reverse proxy
+Extremely light and powerful Node JS reverse proxy and forward-proxy
 
 
 # Philosophy
@@ -10,7 +10,7 @@ Extremely light and powerful Node JS reverse proxy
   - Focus on **High Performance** and **High availability**
   - Easy to fork and modify
 
-# Feature
+# Features
 
   - Flexible and easy routing
   - Easy to deploy and upgrade without downtime
@@ -20,90 +20,117 @@ Extremely light and powerful Node JS reverse proxy
   - Works with Let's Encrypt, activate https as soon as a certificate is available
   - Multi-thread (cluster by default)
   - DNS Failover
-  - Websockets
+  - Websockets, HTTP2
   - Zero Point of Failure (multi-server master-slave config)
   - Zero downtime: register and unregister routes, add certificates without restarting
   - Passes tests of heavily used `node-http-proxy` module but without memory leaks and with better performance
-  - Reload-safe: if config file is broken, it keeps previous config in memory (zero downtime)
-  - Includes awesome statistics
+  - Reload-safe: if config file is broken, it keeps previous config in memory and in the disk (zero downtime)
+  - (TODO) Includes awesome statistics
     - top-10 slowest queries
     - histogram per hour, per response time
-    - send real-time statistics to https://my-netdata.io/ (per domain, globally and per http status)
+    - send real-time statistics to Netdata
 
-
-# Signal
-
-The following signals will be used:
-
-- WINCH: This tells the GoHA master process to gracefully stop its associated worker instances.
-- USR2: Reload conf without restarting 
-- HUP: This tells an GoHA master process to re-read its configuration files and replace worker processes with those adhering to the new configuration. If an old and new master are running, sending this to the old master will spawn workers using their original configuration.
-- QUIT: This shuts down a master and its workers gracefully.
-- TERM: This initiates a fast shutdown of the master and its workers.
-- KILL: This immediately kills a master and its workers without any cleanup.
 
 
 # Getting-started
 
+## In production with systemd (Ubuntu/Debian ONLY)
 
-### Systemd
+GoHA relies on systemd to run with a high level of security and availability.
 
-- Install
-
-
-
-### Node
-
-
-- Create a config file
+It provides automatic deployment scripts and a CLI for administration
 
 ```bash
-  vi config.json
+  # Execute the installation command directly from the binary and follow instructions
+  ./goha-x-x-x install
 ```
 
-- Run
+Now GoHA is installed and running. See the Configuration part below to configure the proxy.
+
+> By default, the service is installed in `/usr/local/bin/goha` and run with `goha` user.
+> The working directory, where the configuration is stored, is `/var/www/goha`.
+> It is possible to overwrite this values with environment variables `GOHA_USER` and `GOHA_WORKDIR`.
+
+## In development
+
 
 ```bash
-  goha start
+  npm install
+  # start the proxy locally without systemd
+  bin/goha go
+  # tests
+  npm test
+  # build binary and tag (You must manually update version in package.json before)
+  npm run build
 ```
 
-> by default, GoHA searches a config.json where it is executed
+
+
+# Command Line Interface
+
+```bash
+  goha [commands]
+
+  #  Production commands. For Linux only, GoHA must be installed before:
+  #
+  #    start          : Start the proxy
+  #    stop           : Stops the proxy
+  #    reload         : Reloads the configuration or upgrade seamlessly (no socket lost, no packet lost)
+  #    log            : Shows logs in realtime
+  #    restart        : Restarts completely the proxy with service interruption
+  #    --version [-v] : Get current version
+  #    --help [-h]    : Show this help
+  #
+  #  Installation and tests commands:
+  #
+  #    install  : Install the proxy as a systemd service (Linux only)
+  #               Options:
+  #                 --non-interactive : install without user interaction
+  #                 --no-start        : do not start or restart service
+  #    go       : Start the proxy without systemd, only for test purpose
+  #
+```
+
+
 
 
 # Configuration 
 
 GoHA can be configured with three methods
-  - method 1 : a dynamic Javascript file which build and exports the JSON configuration file.
-  - method 2 : a static JSON file
-  - method 3 : an HTTP API, which updates the static JSON file. **Available only if the method 2 is used.**
+  - **[method 1]** : a static JSON file
+  - **[method 2]** : an HTTP API, which updates the static JSON file. **Available only if the method 1 is used.**
+  - **[method 3]** : a dynamic Javascript file which build and exports the JSON configuration file.
 
+Configuration files are stored in the working directory in `$GOHA_WORKDIR` (`/var/www/goha` by default).
 
-Configuration files are stored in the working directory in `$GOHA_WORKDIR` (`/var/www/goha` by default)
+Here is the file structure of the working directory:
 
 ```bash
-  |- config.js            # [method 1] user-defined javascript which exports the configuration
-  |- config.json          # [method 2] user-defined configuration file
-  |- .config-runtime.json # last valid configuration file currently in production (DO NOT MODIFY).
+  |- config.json          # [method 1] user-defined configuration file
+  |- config.js            # [method 3] user-defined javascript which exports the configuration
+  |- .config-runtime.json # last valid configuration file currently used in production (DO NOT MODIFY).
   |- backup
     |- config-20210505121001.json # automatic backup of previous configuration file
-    |- config-20210603121011.json # GoHA keeps only the last 7 days of configuration file.
+    |- config-20210603121011.json # GoHA keeps all history for the moment
   | middlewares 
-    |- loadBalancing.js  # load balancing middleware functions    
-    |- onRequest.js      # on request middleware
-    |- onResponse.js     # on response middleware
+    |- loadBalancing.js  # (TODO) load balancing middleware functions    
+    |- onRequest.js      # (TODO) on request middleware
+    |- onResponse.js     # (TODO) on response middleware
   | public 
-    |- 404.html          # defualt 404 html page error
+    |- 404.html          # (TO_IMPROVE) default mainteance or 404 error page
 
 ```
 
-#### All options of config.json
 
+## [method 1] config.json
 
-```json
+Here are all options available in `config.json` 
+
+```js
   {
     "port" : 80,
     "portSSL" : 443,    // GoHA reads Let's Encript certificate automatically in /etc/letsencrypt/live
-    "portAdmin" : 3000, // REST API to update configuration remotely (method 3) and dashboard + monitoring URLs
+    "portAdmin" : 3000, // REST API to update configuration remotely (method 2) and dashboard + monitoring URLs
     "domains" : {
       // every request coming to blabla.company.net will be routed to http://100.100.100.100:8101
       "blabla.company.net" : "http://100.100.100.100:8101",
@@ -132,7 +159,7 @@ Configuration files are stored in the working directory in `$GOHA_WORKDIR` (`/va
         // For each request, a loop calls this function for each backend where isReady is true
         // It sends the request to the backend for which the function returns the lowest number
         // Be carefull, this function is stringified so you cannot use variable coming from outside
-        "loadBalancingFn" : (req, backend) => { return backend.nbConnection; }, // [OPTIONAL]
+        "loadBalancingFn" : "", // [TODO]
         // custom error page if saas-client-2.company.net is not available
         "errorPage" : "custom404.html",
         // accept traffic coming from this interface only
@@ -149,22 +176,22 @@ Configuration files are stored in the working directory in `$GOHA_WORKDIR` (`/va
   }
 ```
 
-### REST API + Dashboard administration
+## [method 2] REST API + Dashboard administration
 
 GoHA listens `portAdmin` for administration if `portAdmin` is defined.
 
-**⚠️ Be careful, this port should not be publicly exposed even if its protected ⚠️** .  You should allow access only through a VPN.
+**⚠️ Be careful, this port should not be publicly exposed even if its protected ⚠️** . You should allow access only through a VPN.
 
 *List of APIs:*
 
-- `GET  /      ` : [HTML] show a simple dashboard
+- `GET  /      ` : [HTML] show a simple dashboard (TODO) 
 - `POST /config` : [JSON] overwrite existing configuration. All missing element are deleted ⚠️
 - `PUT  /config` : [JSON] merge with existing configuration (update and add elements only)
-- `GET  /status` : [HTML] status of GoHA
-- `GET  /metric` : [HTML] open metrics
+- `GET  /status` : [HTML] status of GoHA (TODO)
+- `GET  /metric` : [HTML] open metrics (TODO)
 
 
-#### PUT /config
+### PUT /config
 
 The configuration sent by API is merged with the existing one. It adds missing domains, modify existing attributes and it does not delete anything
 
@@ -184,21 +211,39 @@ The JSON format is exactly the same as the configuration file on the disk.
 
 **Response**:
 
-It returns the whole config
+It returns the whole config in "data" attribute
 
 ```json
   {
-    "domains" : {
-      "blabla.company.net" : "http://100.100.100.100:8101",
-      "toto.company.net"   : "http://100.100.100.101:8102"  // existing config
-    }
+    "data": {
+      "domains" : {
+        "blabla.company.net" : "http://100.100.100.100:8101",
+        "toto.company.net"   : "http://100.100.100.101:8102"  // existing config
+      },
+    "message" : "success message"
   }
 ```
 
 
+## [method 3] Javascript mode
 
-# Internal Workflow
+The config file can be a dynamic Javascript file. So you can write code to generate a dynamic config file.
 
+This file must export the config object.
+
+```javascript
+  let config = {}; // same config as explained earlier
+  module.exports = config;
+```
+
+> ⚠️ `config.js` is ignored if there is a `config.json` in the working directly.
+
+
+
+
+## Internal workflow
+
+The master does little things. Everything is done in workers.
 
 - The master starts
   - It copies `config.json` to `.config-runtime.json` if the latter does not exists
@@ -207,43 +252,23 @@ It returns the whole config
 - When a worker starts
   - It read only `.config-runtime.json`
 
-- When the signal to reload conf is read
-  - The master catch the signal
-  - It sends a message to one worker to read the new `config.json` instead of  `.config-runtime.json` if it has changed
-  - If the worker reloads the configuration with succeed, it send a "success" signal to the master
-  - If the master receive the success signal, it replaces `.config-runtime.json` by `config.json` and create a backup of the previous config in backups dir
-  - and it sends a signal to all other workers to reload the conf
+- When the signal to reload the configuration is received
+  - The master catches the signal
+  - The master sends a message to one worker to test the new `config.json` 
+  - If the worker can read the configuration with success, it sends a "success" signal to the master
+  - If the master receives the "success" signal, it replaces `.config-runtime.json` by the content of `config.json` and creates a backup of the previous config in `backup` directory
+  - The master sends a signal to all workers to really reload the configuration by reading `.config-runtime.json`
 
 
-`.config-runtime.json`  can be different from `config.json` if the latter contains an error for example and cannot be loaded.
- In that case, `.config-runtime.json` is used as a backup to keep the last working configuration in production
+`.config-runtime.json`  can be different from `config.json` if the latter contains an error and cannot be loaded.
+In that case, `.config-runtime.json` is used as a backup to run the last working configuration in production (Very useful when the machine restarts).
 
 
-The config file is Javascript file. So you can write code to generate a dynamic config file.
-This file must export the config object.
 
-> If you prefer to use a pure JSON file, you can write a `config.js` file which contains `module.exports = require('./myConfig.json')`
+# Logging
 
-If the file contains an error, the file is ignored and GoHA keep using the previous valid config file, which is stored in memory and on disk config.runtime.js
+You can use `goha log` to logs in live mode. It is a shortcut of `journalctl -n 500 -f -u $GOHA_SERVICE_NAME`
 
-
-### Javascript mode :
-
-```javascript
-  var config = {}; // same config as before
-  module.exports = config;
-```
-
-
-At startup, goha search a config.js where it is executed.
-
-If the port 80 is used, allow users to execute Nodejs on port 80 with this command:
-
-```
-sudo setcap 'cap_net_bind_service=+ep' ~/.nvm/current/bin/node   # adapt the path if necessary
-```
-
-# How to see logs?
 
 Log format : `"[TYPE]"  "LEVEL"  "message"`
 
@@ -260,25 +285,18 @@ Log format : `"[TYPE]"  "LEVEL"  "message"`
   - for `[APP]` message, general info
   - for `[REQ]` see format below
 
-    [REQ] INFO 192.168.1.1 www.mysite.com http://192.161.1.10:3001 GET /css/main.css unique_request_id
-    [REQ] INFO 192.168.1.1 www.mysite.com http://192.161.1.10:3001 GET /css/main.css unique_request_id
+
+> GoHA relies on systemd to lotates logs
 
 
-
-GoHA write and rotates logs in `/logs` of the working directory, next to `config.js`.
-
-The log retention is defined in `lib/logger.js:LOG_RETENTION` (10 days).
-
-Use `goha logs`. It is a shortcut of `tail -f logs/out.log`
-
-Logs output:
-
+Logs output (TODO)
 ```
-  Date                ipSource    ->  hostSource       -> ipTarget                  : Method URL
-  2016-08-24 16:27:06 192.168.1.1 ->  www.myapp.com  -> http://37.59.175.179:3001 : GET    /css/main.css
-  2016-08-24 16:27:06 192.168.1.1 ->  www.myapp.com  -> http://37.59.175.179:3001 : GET    /undefined
-  2016-08-24 16:27:06 192.168.1.1 ->  www.myapp.com  -> http://37.59.175.179:3001 : GET    /favicon.ico 
+  [REQ] INFO 192.168.1.1 www.mysite.com http://192.161.1.10:3001 GET /css/main.css unique_request_id
+  [REQ] INFO 192.168.1.1 www.mysite.com http://192.161.1.10:3001 GET /css/main.css unique_request_id 
 ```
+
+
+
 
 # Version routing
 
@@ -301,6 +319,8 @@ GoHA can route packets according to version header. Each backend must have a ver
 
 If there is a conflicts, GoHA selects the backend which has the longest version string.
 In the example above, if the client has a header `"App-Version" : "2.1"`, the backend which has the port 8105 is choosen.
+
+
 
 
 # How to activate SSL?
@@ -345,7 +365,8 @@ Let's encrypt cannot generate more than 5 certificates per week (rate limit), so
     `goha reload`
 
 
-# How to renew SSL Certificates ?
+
+### How to renew SSL Certificates ?
 
 Each month, renew all certificates in a cron tab with
 
@@ -355,9 +376,13 @@ cd /var/www/goha/
 goha reload
 ```
 
-# DNS Let encrypt
+### DNS Let encrypt
 
 https://buzut.net/certbot-challenge-dns-ovh-wildcard/
+
+
+
+
 
 
 # Load balancing
@@ -388,39 +413,3 @@ But you can overwrite with your own function or one of these built-in functions 
   loadBalancing.selectBackendUsingBase64IP(/^\/render\/(.*)/)
 ```
 
-# Development philosophy
-
-Only the master read the config file. It validates it and send it to workers only if everything is ok.
-
-# Commands
-
-These commands must be executed in the working directory of GoHA.
-
-```
-Actions :
-  start      : Start your proxy
-  log        : Shows logs in realtime
-  err        : Shows error logs in realtime
-  reload     : Reloads your proxy one cluster at a time to keep your front alive
-               Usually used when updating your conf and certificates
-  restart    : Restarts completely your proxy with service interruption
-               Usually used when upgrating goha
-  stop       : Stops your proxy
-```
-
-
-
-Grabage collector : https://plaid.com/blog/how-we-parallelized-our-node-service-by-30x/
-Header security https://cheatsheetseries.owasp.org/cheatsheets/Nodejs_Security_Cheat_Sheet.html
-
-
-
-
-
-------------
-
-TODO
-
-TODO: https://about.ip2c.org/#about
-
-Regarder https://github.com/agnoster/duplicator
