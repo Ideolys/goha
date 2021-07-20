@@ -112,7 +112,7 @@ Here is the file structure of the working directory:
   |- backup
     |- config-20210505121001.json # automatic backup of previous configuration file
     |- config-20210603121011.json # GoHA keeps all history for the moment
-  | middlewares 
+  | middleware
     |- loadBalancing.js  # (TODO) load balancing middleware functions    
     |- onRequest.js      # (TODO) on request middleware
     |- onResponse.js     # (TODO) on response middleware
@@ -237,7 +237,7 @@ This file must export the config object.
   module.exports = config;
 ```
 
-> ⚠️ `config.js` is ignored if there is a `config.json` in the working directly.
+> ⚠️ `config.json` is ignored if there is a `config.js` in the working directly.
 
 
 
