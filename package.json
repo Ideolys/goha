@@ -12,6 +12,9 @@
   "license": "Apache-2.0",
   "pkg": {
     "assets": [
+      "lib/config.js",
+      "lib/proxy.js",
+      "lib/worker.js",
       "bin/cli.sh",
       "bin/install.sh",
       "bin/systemd"

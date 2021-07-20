@@ -135,7 +135,7 @@ Here are all options available in `config.json`
       // every request coming to blabla.company.net will be routed to http://100.100.100.100:8101
       "blabla.company.net" : "http://100.100.100.100:8101",
       "toto.company.net"   : "http://100.100.100.101:8102",
-      // Underscore char can be used to deactivate a redirection wihout removing the line from the JSON
+      // Underscore char can be used to deactivate a redirection wihout removing the line from the JSON [TODO]
       "_titi.company.net"   : "http://100.100.100.101:8102",
       // Add custom headers like x-schema for ideos multitenant
       "saas-client-1.company.net" : { 
@@ -161,9 +161,9 @@ Here are all options available in `config.json`
         // Be carefull, this function is stringified so you cannot use variable coming from outside
         "loadBalancingFn" : "", // [TODO]
         // custom error page if saas-client-2.company.net is not available
-        "errorPage" : "custom404.html",
+        "errorPage" : "custom404.html", // [TODO]
         // accept traffic coming from this interface only
-        "listen" : "192.161.1.1"
+        "listen" : "192.161.1.1" // [TODO]
       }
     },
     // default error page if a website is not available
@@ -185,6 +185,7 @@ GoHA listens `portAdmin` for administration if `portAdmin` is defined.
 *List of APIs:*
 
 - `GET  /      ` : [HTML] show a simple dashboard (TODO) 
+- `GET  /config` : [JSON] get current runtime config
 - `POST /config` : [JSON] overwrite existing configuration. All missing element are deleted ⚠️
 - `PUT  /config` : [JSON] merge with existing configuration (update and add elements only)
 - `GET  /status` : [HTML] status of GoHA (TODO)
