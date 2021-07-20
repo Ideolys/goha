@@ -31,14 +31,11 @@ jobs:
       - name: Get the filenmae
         run: echo "GOHA_FILENAME=$(echo goha-linux-${GOHA_VERSION//./-})" >> $GITHUB_ENV
 
-      - name: Echo
-        run: echo $GOHA_FILENAME
-
       - name: Install pkg
         run: sudo npm i -g pkg@5.3.0
       
       - name: Build
-        run:  pkg -t node14-linux-x64 -o ./build/${{ GOHA_FILENAME }} .
+        run:  pkg -t node14-linux-x64 -o ./build/${{ env.GOHA_FILENAME }} .
       
       - name: Create Release
         id: create_release
@@ -58,6 +55,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./build/${{ GOHA_FILENAME }}
-          asset_name: ${{ GOHA_FILENAME }}
+          asset_path: ./build/${{ env.GOHA_FILENAME }}
+          asset_name: ${{ env.GOHA_FILENAME }}
           asset_content_type: application/octet-stream
