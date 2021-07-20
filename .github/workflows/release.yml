@@ -3,8 +3,8 @@ name: Upload assets
 on:
   push:
     # Sequence of patterns matched against refs/tags
-    tags:
-    - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    # tags:
+    # - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -26,12 +26,14 @@ jobs:
         run: npm install
       
       - name: Get the version without /refs/tags/
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: echo "GOHA_VERSION=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_ENV
 
-      - name: Replace dots by dashes for filename
-        id: get_filename_version
-        run: echo ::set-output name=VERSION::${steps.get_version.outputs.VERSION/./-}
-      
       - name: Echo
-        run: echo ${{ steps.get_filename_version.outputs.VERSION }}
+        run: echo $GOHA_VERSION
+
+      - name: Get the filenmae
+        run: echo "GOHA_FILENAME=$(echo ${GOHA_VERSION/./-/})" >> $GITHUB_ENV
+
+      - name: Echo
+        run: echo $GOHA_FILENAME
+      
