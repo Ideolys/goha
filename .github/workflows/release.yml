@@ -27,11 +27,11 @@ jobs:
       
       - name: Get the version without /refs/tags/
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - name: Replace dots by dashes for filename
         id: get_filename_version
-        run: echo ::set-output name=VERSION::${steps.get_version.outputs.VERSION#./-/}
+        run: echo ::set-output name=VERSION::${steps.get_version.outputs.VERSION/./-}
       
       - name: Echo
         run: echo ${{ steps.get_filename_version.outputs.VERSION }}
