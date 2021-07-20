@@ -19,11 +19,11 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      
-      - name: Install Dependencies
-        run: npm install
+      # - name: Checkout code
+      #   uses: actions/checkout@v2
+      # 
+      # - name: Install Dependencies
+      #   run: npm install
       
       - name: Get the version without /refs/tags/
         run: echo "GOHA_VERSION=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_ENV
@@ -32,7 +32,7 @@ jobs:
         run: echo $GOHA_VERSION
 
       - name: Get the filenmae
-        run: echo "GOHA_FILENAME=$(echo ${GOHA_VERSION/./-/})" >> $GITHUB_ENV
+        run: echo "GOHA_FILENAME=$(echo ${GOHA_VERSION//./-})" >> $GITHUB_ENV
 
       - name: Echo
         run: echo $GOHA_FILENAME
