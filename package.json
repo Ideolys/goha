@@ -4,7 +4,9 @@
   "description": "Go High Availability with the fastest easy-to-use reverse proxy",
   "bin": "bin/goha",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -w --growl -u bdd -t 20000 -R list -b test/*.js"
+    "test": "./node_modules/.bin/mocha -w --growl -u bdd -t 20000 -R list -b test/*.js",
+    "dry-build": "pkg -o ./build/goha .",
+    "build": "bin/build.sh"
   },
   "author": "David Grelaud",
   "pkg": {
