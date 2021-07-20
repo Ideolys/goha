@@ -1,4 +1,4 @@
 # GoHA
 
-### v0.1.0
-  - First version of GoHA, inspired by TazJS
+### 1.0.0-beta.0
+  - First version of GoHA

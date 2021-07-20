@@ -1,6 +1,6 @@
 {
   "name": "goha",
-  "version": "0.1.0",
+  "version": "1.0.0-beta.0",
   "description": "Go High Availability with the fastest easy-to-use reverse proxy",
   "bin": "bin/goha",
   "scripts": {
@@ -8,7 +8,7 @@
     "dry-build": "pkg -o ./build/goha .",
     "build": "bin/build.sh"
   },
-  "author": "David Grelaud",
+  "author": "Ideolys SAS",
   "license": "Apache-2.0",
   "pkg": {
     "assets": [
