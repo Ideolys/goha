@@ -76,7 +76,7 @@ function installService (argv) {
   console.log('Generate install script ', argv[0]);
   try {
     // copy template systemd script outside of PKG binary file
-    fs.writeFileSync(path.join('tmp', 'goha-systemd-template')   , fs.readFileSync(path.join(__dirname, 'systemd')));
+    fs.writeFileSync(path.join('/tmp', 'goha-systemd-template')   , fs.readFileSync(path.join(__dirname, 'systemd')));
   }
   catch (e) {
     console.log('Cannot write goha-systemd-template files in /tmp \n' +  e);
