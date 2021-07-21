@@ -60,10 +60,9 @@ Now GoHA is installed and running. See the Configuration part below to configure
   bin/goha go
   # tests
   npm test
-  # build binary and tag (You must manually update version in package.json before)
+  # build binary
   npm run build
 ```
-
 
 
 # Command Line Interface
@@ -413,4 +412,22 @@ But you can overwrite with your own function or one of these built-in functions 
    */
   loadBalancing.selectBackendUsingBase64IP(/^\/render\/(.*)/)
 ```
+
+
+# Notes
+
+#### Doc of postintall command line
+
+```bash
+# If the file cert.pem does not exists
+(    [ ! -f \"./cert.pem\" ] 
+# And npm install is executed without the option "--production" (used by Gihtub Actions to speed up npm install, avoiding devDeps)
+  && [ -z \"$npm_config_production\" ]
+) 
+# Generate a certificate for development
+&& openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj \"/C=FR/ST=FR/L=Paris/O=Goha/OU=Goha/CN=localhost/emailAddress=no@goha.io\" -keyout ./privkey.pem -out ./cert.pem 
+# Else, print a message
+|| echo \"Default certificate already generated or production install\" "
+```
+
 

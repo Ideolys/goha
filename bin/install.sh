@@ -85,6 +85,8 @@ GOHA_BIN_PATH="$GOHA_INSTALL_DIR/$GOHA_BIN"
 GOHA_SERVICE_NAME=$GOHA_BIN
 SYSTEMD_TEMPLATE="$(dirname "$BINARY_FILE_PATH")/goha-systemd-template" # genarated just efore executing this file
 SYSTEMD_SERVICE_PATH="/etc/systemd/system/${GOHA_SERVICE_NAME}.service"
+DEFAULT_PRIVKEY="${GOHA_WORKDIR}/privkey.pem";
+DEFAULT_CERT="${GOHA_WORKDIR}/cert.pem";
 
 echo $BINARY_FILE_PATH
 echo ""
@@ -160,6 +162,14 @@ if [ $BINARY_FILE_PATH != $GOHA_BIN_PATH ]; then
   # allow execution on port 80 and 443
   setcap 'cap_net_bind_service=+ep' $GOHA_BIN_PATH
 fi
+
+if [ ! -f "$DEFAULT_PRIVKEY" ] then
+  print_info "Generate default certificate "
+  openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=FR/ST=FR/L=Paris/O=Goha/OU=Goha/CN=localhost/emailAddress=no@goha.io" -keyout ${DEFAULT_PRIVKEY} -out ${DEFAULT_CERT}
+  exit_on_command_error "Cannot generate default certificate"
+  print_success "OK"
+fi
+
 
 #print_info "Change owner of executable "
 #chown $GOHA_USER:$GOHA_USER $GOHA_BIN_PATH

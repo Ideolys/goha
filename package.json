@@ -3,10 +3,11 @@
   "version": "1.0.0-beta.1",
   "description": "Go High Availability with the fastest easy-to-use reverse proxy",
   "bin": "bin/goha",
-  "private": false,
+  "private": true,
   "scripts": {
     "test": "./node_modules/.bin/mocha -w --growl -u bdd -t 20000 -R list -b test/*.js",
-    "build": "pkg -t node14-linux-x64 --out-path ./build ."
+    "build": "pkg -t node14-linux-x64 --out-path ./build .",
+    "postinstall": "([ ! -f \"./cert.pem\" ] && [ -z \"$npm_config_production\" ]) && openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj \"/C=FR/ST=FR/L=Paris/O=Goha/OU=Goha/CN=localhost/emailAddress=no@goha.io\" -keyout ./privkey.pem -out ./cert.pem || echo \"Default certificate already generated\" "
   },
   "author": "Ideolys SAS",
   "license": "Apache-2.0",
