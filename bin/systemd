@@ -13,7 +13,7 @@ Restart=always
 # Allow watchdog notification coming from a subprocess 
 NotifyAccess=all
 RestartSec=1
-Environment=NODE_ENV=prod
+Environment=NODE_ENV=production
 ProtectControlGroups=true
 ProtectHome=true
 ProtectKernelModules=true
@@ -25,7 +25,10 @@ SystemCallArchitectures=native
 NoNewPrivileges=true
 PrivateTmp=true
 PrivateDevices=true
-CapabilityBoundingSet=
+# Allow the process to listen port 80 and 443
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+# SecureBits=keep-caps # automatically set by AmbientCapabilities?
 
 # Kill after X seconds if soft stop does work
 # TimeoutStopSec=90 
