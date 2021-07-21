@@ -163,9 +163,9 @@ if [ $BINARY_FILE_PATH != $GOHA_BIN_PATH ]; then
   setcap 'cap_net_bind_service=+ep' $GOHA_BIN_PATH
 fi
 
-if [ ! -f "$DEFAULT_PRIVKEY" ] then
+if [ ! -f "$DEFAULT_PRIVKEY" ]; then
   print_info "Generate default certificate "
-  openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=FR/ST=FR/L=Paris/O=Goha/OU=Goha/CN=localhost/emailAddress=no@goha.io" -keyout ${DEFAULT_PRIVKEY} -out ${DEFAULT_CERT}
+  openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=FR/ST=FR/L=Paris/O=Goha/OU=Goha/CN=localhost/emailAddress=no@goha.io" -keyout $DEFAULT_PRIVKEY -out $DEFAULT_CERT
   exit_on_command_error "Cannot generate default certificate"
   print_success "OK"
 fi
