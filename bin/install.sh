@@ -156,6 +156,9 @@ if [ $BINARY_FILE_PATH != $GOHA_BIN_PATH ]; then
   chmod 755 $GOHA_BIN
   exit_on_command_error "Cannot make it executable"
   print_success "OK"
+
+  # allow execution on port 80 and 443
+  setcap 'cap_net_bind_service=+ep' $GOHA_BIN_PATH
 fi
 
 #print_info "Change owner of executable "

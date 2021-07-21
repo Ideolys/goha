@@ -22,8 +22,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
+      # "--production" avoid installing dev dependencies to speed up process
       - name: Install Dependencies
-        run: npm install
+        run: npm install --production
       
       - name: Get the version without /refs/tags/
         run: echo "GOHA_VERSION=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_ENV
