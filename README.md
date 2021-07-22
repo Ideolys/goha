@@ -41,8 +41,10 @@ GoHA relies on systemd to run with a high level of security and availability.
 It provides automatic deployment scripts and a CLI for administration
 
 ```bash
-  # Execute the installation command directly from the binary and follow instructions
-  ./goha-x-x-x install
+  # Download the binary
+  wget https://github.com/Ideolys/goha/releases/download/1.0.0-beta.2/goha-linux-1-0-0-beta-2
+  # To install it, execute the installation command directly from the binary and follow instructions
+  ./goha-linux-1-0-0-beta-2 install
 ```
 
 Now GoHA is installed and running. See the Configuration part below to configure the proxy.
@@ -51,10 +53,24 @@ Now GoHA is installed and running. See the Configuration part below to configure
 > The working directory, where the configuration is stored, is `/var/www/goha`.
 > It is possible to overwrite this values with environment variables `GOHA_USER` and `GOHA_WORKDIR`.
 
-## In development
+## For development or testing purpose
 
+- For testing purpose
 
 ```bash
+  # If you want to just execute "in place" for testing purpose
+  # Create a working directory
+  mkdir ~/goha
+  # Download executable
+  wget https://github.com/Ideolys/goha/releases/download/1.0.0-beta.2/goha-linux-1-0-0-beta-2
+  # And start goha directly in the directory (=the working directory)
+  ./goha-linux-1-0-0-beta-2 go
+```
+
+- For development:
+
+```bash
+  # Clone the source code and run:
   npm install
   # start the proxy locally without systemd
   bin/goha go
@@ -201,7 +217,7 @@ The JSON format is exactly the same as the configuration file on the disk.
 
 **Body**
 
-```json
+```js
   {
     "domains" : {
       "blabla.company.net" : "http://100.100.100.100:8101", // add a domain
@@ -213,7 +229,7 @@ The JSON format is exactly the same as the configuration file on the disk.
 
 It returns the whole config in "data" attribute
 
-```json
+```js
   {
     "data": {
       "domains" : {
