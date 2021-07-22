@@ -26,12 +26,14 @@ then
 
   echo "Starting the proxy ..."
   systemctl start $GOHA_SERVICE_NAME
+  systemctl status $GOHA_SERVICE_NAME
 
 elif [[ $0 = "stop" ]]
 then
 
   echo "Stopping proxy ..."
   systemctl stop $GOHA_SERVICE_NAME
+  systemctl status $GOHA_SERVICE_NAME
 
 elif [[ $0 = "log" ]]
 then
@@ -44,15 +46,16 @@ then
   echo "Send reload signal HUP"
   systemctl kill -s HUP --kill-who=main $GOHA_SERVICE_NAME
   # Then print some log for 10 seconds
-  journalctl -n 500 -f -u $GOHA_SERVICE_NAME | grep INFO &
-  sleep 10
+  journalctl -n 500 -f -u $GOHA_SERVICE_NAME | grep [APP] &
+  sleep 5
   kill "$!"  # $! =  process ID of the most recently started background process
 
 elif [[ $0 = "restart" ]]
 then
 
-  echo "Retarting proxy ..."
+  echo "Restarting proxy ..."
   systemctl restart $GOHA_SERVICE_NAME
+  systemctl status $GOHA_SERVICE_NAME
 
 else
 
